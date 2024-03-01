@@ -28,16 +28,20 @@ class ScenarioGenerator:
         self._category: Category = Category.standard(
             "recat" if not hasattr(parameter, "standard") else parameter.standard
         )
+        if not hasattr(parameter, "seed"):
+            seed = np.random.rand()
+            parameter.set("seed", seed)
+        self._rs = np.random.RandomState(parameter.seed)
 
     def __call__(self, num_generate: int) -> Scenario:
         # time window
-        intervals = poisson_interval(self._interval, size=num_generate).astype(int)
+        intervals = poisson_interval(self._interval, size=num_generate, rs=self._rs).astype(int)
         times_de = np.cumsum(intervals)
         times_to = np.ones_like(times_de) * self._window + times_de
 
         # mode
         if self._mode == OperationMode.M:
-            operations = np.random.choice(
+            operations = self._rs.choice(
                 [o for o in Operation],
                 num_generate, replace=True
             )
@@ -45,7 +49,7 @@ class ScenarioGenerator:
             operations = np.array([self._mode,] * num_generate)
 
         # category
-        categories = np.random.choice(
+        categories = self._rs.choice(
             [c for c in self._category],
             num_generate, replace=True
         )
