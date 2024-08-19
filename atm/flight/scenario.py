@@ -42,6 +42,9 @@ class Scenario:
             operation=[vol.ope for vol in self._vols]
         ))
 
+    def copy(self):
+        return Scenario(self._vols.copy())
+
 
 class ScenarioIterator:
 

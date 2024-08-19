@@ -11,3 +11,8 @@ build/
 dist/
 atm.egg-info/
 result/
+
+# optimizer
+bin/
+lib/
+include/
